@@ -13,29 +13,17 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/health/", response_model=HealthResponse)
+@router.get("/health", response_model=HealthResponse)
 def health_check(db: Session = Depends(get_db)):
-    # Database connectivity check
+    
     try:
         db.execute(text("SELECT 1"))
         database_ok = True
     except Exception:
         logger.critical("Database connectivity check failed", exc_info=True)
         database_ok = False
-        
-    # Determine if daily job was missed
-        now = datetime.utcnow()
 
-        today_midnight = datetime.combine(
-            date.today(),
-            time.min
-        )
-
-        missed_daily_reconciliation = (
-            now > today_midnight + timedelta(hours=1)  # grace window
-            and not today_report
-        )
-
+    
     last_successful_job = (
         db.query(JobRun)
         .filter(
@@ -46,12 +34,22 @@ def health_check(db: Session = Depends(get_db)):
         .first()
     )
 
+    
     today_report = (
         db.query(DailyReconciliationReport)
         .filter(
             DailyReconciliationReport.report_date == date.today()
         )
         .first()
+    )
+
+    
+    now = datetime.utcnow()
+    today_midnight = datetime.combine(date.today(), time.min)
+
+    missed_daily_reconciliation = (
+        now > today_midnight + timedelta(hours=1)  # grace window
+        and not today_report
     )
 
     overall_status = "ok" if database_ok else "degraded"
@@ -64,5 +62,5 @@ def health_check(db: Session = Depends(get_db)):
             if last_successful_job else None
         ),
         today_reconciliation_present=bool(today_report),
-        missed_daily_reconciliation=missed_daily_reconciliation
+        missed_daily_reconciliation=missed_daily_reconciliation,
     )
