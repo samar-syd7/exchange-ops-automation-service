@@ -1,6 +1,8 @@
 # Exchange Ops Automation Service
 
-Internal backend service for automating operational tasks used by crypto exchanges, with a strong focus on reliability, idempotency, and ops maturity.
+Backend infrastructure service for automating operational workflows within cryptocurrency exchanges.
+
+The system demonstrates reliability-focused backend patterns including idempotent job execution, distributed task processing, and operational health monitoring.
 
 This project intentionally avoids:
 - Blockchain node integration
@@ -41,14 +43,25 @@ Exposes:
 
 ## Architecture Overview
 
-FastAPI → Redis → Celery Worker → Job Logic → Database
-
-APScheduler is optionally used for simple deployments or local testing.
+````
+FastAPI API
+     ↓
+Scheduler / Manual Trigger
+     ↓
+Redis (Task Queue)
+     ↓
+Celery Worker
+     ↓
+Operational Job Logic
+     ↓
+Database.
+````
 
 ---
 
 ## Project Structure
 
+````
 app/
 ├── api/
 ├── core/
@@ -57,6 +70,7 @@ app/
 ├── tasks/
 ├── celery_app.py
 ├── main.py
+````
 
 ---
 
@@ -74,7 +88,7 @@ app/
 
 ## Testing Strategy
 
-This project includes a **real, meaningful automated test suite** designed to validate reliability and operational correctness — not just happy paths.
+This project includes a **real, meaningful automated test suite** designed to validate reliability and operational correctness - not just happy paths.
 
 ### What Is Tested
 
