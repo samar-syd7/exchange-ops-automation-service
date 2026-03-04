@@ -59,6 +59,27 @@ Database.
 
 ---
 
+## Reliability Guarantees
+
+The system enforces operational correctness through several guarantees:
+
+- **Idempotent reconciliation jobs**  
+  Repeated executions of the reconciliation job always produce the same result and never create duplicate daily reports.
+
+- **Retry-safe job execution**  
+  Background tasks can safely be retried without causing inconsistent database state.
+
+- **Operational health monitoring**  
+  The `/api/health/` endpoint exposes real-time system status including database connectivity, job execution history, and missed job detection.
+
+- **Separation of scheduling and execution**  
+  Job orchestration is decoupled from execution. APScheduler can trigger jobs while Celery workers handle execution asynchronously.
+
+- **Deterministic daily reporting**  
+  Daily reports are uniquely identified by `report_date`, ensuring immutable operational records.
+
+---
+
 ## Project Structure
 
 ````
@@ -122,6 +143,54 @@ These tests intentionally:
 - Proved idempotency guarantees
 
 This reflects how internal reliability services are tested at real exchanges.
+
+---
+
+## Failure Scenarios Considered
+
+The system was designed while considering several real-world operational failure scenarios.
+
+### Scheduler Double Trigger
+Schedulers can sometimes trigger the same job multiple times due to restarts or deployment events.
+
+Mitigation:
+- Reconciliation jobs are idempotent
+- Duplicate daily reports are prevented.
+
+---
+
+### Worker Crash During Execution
+A Celery worker may crash while executing a job.
+
+Mitigation:
+- Tasks can be safely retried
+- Job execution does not corrupt database state.
+
+---
+
+### Missed Scheduled Job
+A scheduler outage may prevent the daily job from running.
+
+Mitigation:
+- The `/api/health/` endpoint detects when today's reconciliation report is missing
+- Monitoring systems can alert operators.
+
+---
+
+### Database Connectivity Issues
+Temporary database outages may occur.
+
+Mitigation:
+- The health endpoint exposes database connectivity status
+- Monitoring systems can detect service degradation.
+
+---
+
+### Duplicate Task Delivery
+Distributed task queues can occasionally deliver tasks more than once.
+
+Mitigation:
+- Idempotent job design ensures safe repeated execution.
 
 ---
 
