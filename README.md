@@ -1,3 +1,7 @@
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend-green)
+![Tests](https://img.shields.io/badge/tests-pytest-passing)
+
 # Exchange Ops Automation Service
 
 Backend infrastructure service for automating operational workflows within cryptocurrency exchanges.
@@ -24,7 +28,7 @@ The goal is to demonstrate how real exchanges automate and monitor critical inte
 - Fully idempotent (safe to retry or re-run)
 
 ### 2. Operational Health Endpoint
-GET /api/health/
+GET `/api/health/`
 
 Exposes:
 - Database connectivity
@@ -54,7 +58,7 @@ Celery Worker
      ↓
 Operational Job Logic
      ↓
-Database.
+Database
 ````
 
 ---
