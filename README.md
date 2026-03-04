@@ -225,6 +225,27 @@ celery -A app.celery_app.celery_app worker --loglevel=info --pool=solo
 
 ---
 
+## Developer Commands
+
+Common development tasks can be executed using the provided **Makefile**.
+
+| Command | Description |
+|-------|-------------|
+| `make install` | Install project dependencies |
+| `make run` | Start the FastAPI server |
+| `make worker` | Start the Celery worker |
+| `make test` | Run the full test suite |
+
+Example usage:
+
+```bash
+make run
+make worker
+make test
+```
+
+---
+
 ## Documentation
 
 See docs/full-architecture.md for full architecture details.
