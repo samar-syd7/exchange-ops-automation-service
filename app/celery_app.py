@@ -1,15 +1,11 @@
 import os
 from celery import Celery
-
-REDIS_BROKER_URL = os.getenv(
-    "REDIS_BROKER_URL",
-    "redis://localhost:6379/0"
-)
+from app.core.config import settings
 
 celery_app = Celery(
     "exchange_ops_automation",
-    broker=REDIS_BROKER_URL,
-    backend=REDIS_BROKER_URL,
+    broker=settings.CELERY_BROKER_URL,
+    backend=settings.CELERY_RESULT_BACKEND,
 )
 
 celery_app.conf.update(

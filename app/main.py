@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 import logging
-import os
 
 from app.core.logging import setup_logging
+from app.core.config import settings
 from app.db.base import engine
 from app.db.models import Base
 from app.api.health import router as health_router
@@ -35,7 +35,7 @@ def on_startup():
 
     Base.metadata.create_all(bind=engine)
 
-    if os.getenv("ENABLE_SCHEDULER", "true").lower() == "true":
+    if settings.ENABLE_SCHEDULER:
         start_scheduler()
     else:
         logger.info("Scheduler disabled by configuration")
