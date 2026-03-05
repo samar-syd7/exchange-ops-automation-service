@@ -210,19 +210,27 @@ All tests run against an isolated in-memory database and do not require Redis or
 
 ## Running Locally
 
-1. Setup environment
+1. Environment Configuration
+
+Create a local environment file from the template:
+
+```bash
+cp .env.example .env
+```
+
+2. Setup environment
 ````
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ````
 
-2. Run API
+3. Run API
 ````
 uvicorn app.main:app --reload
 ````
 
-3. Run Celery Worker (Windows)
+4. Run Celery Worker (Windows)
 ````
 celery -A app.celery_app.celery_app worker --loglevel=info --pool=solo
 ````
