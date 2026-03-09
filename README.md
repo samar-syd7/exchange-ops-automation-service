@@ -150,6 +150,33 @@ This reflects how internal reliability services are tested at real exchanges.
 
 ---
 
+## Key Design Decisions
+
+### Why Idempotent Jobs?
+
+Operational jobs in exchanges may be retried due to:
+- worker crashes
+- scheduler restarts
+- network issues
+
+Idempotency guarantees that repeated executions will not corrupt operational data.
+
+### Why Separate Scheduling from Execution?
+
+Separating scheduling (APScheduler) from execution (Celery workers) allows the system to scale horizontally while maintaining deterministic job orchestration.
+
+---
+
+## Scaling Considerations
+
+The system can scale horizontally by increasing the number of Celery workers.
+
+Redis acts as the task broker enabling multiple workers to process jobs concurrently.
+
+The reconciliation job remains safe under concurrent execution because it enforces idempotency through unique report identifiers.
+
+---
+
 ## Failure Scenarios Considered
 
 The system was designed while considering several real-world operational failure scenarios.
